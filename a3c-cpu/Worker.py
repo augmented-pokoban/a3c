@@ -84,9 +84,9 @@ class Worker():
                 rnn_state = self.local_AC.state_init
                 self.batch_rnn_state = rnn_state
 
-                while not done or episode_step_count is not max_episode_length:
-                    # if self.number == 0:
-                    #     self.env.render()
+                while not done or episode_step_count < max_episode_length:
+                    if self.number == 0 and episode_step_count % 50 == 0:
+                         print 'Episode:', episode_count, 'steps: ', episode_step_count
 
                     # Take an action using probabilities from policy network output.
                     a_dist, v, rnn_state = sess.run(
@@ -140,7 +140,6 @@ class Worker():
 
                 # Periodically save gifs of episodes, model parameters, and summary statistics.
                 if episode_count % 5 == 0 and episode_count != 0:
-
                     if episode_count % 250 == 0 and self.name == 'worker_0':
                         saver.save(sess, self.model_path + '/model-' + str(episode_count) + '.cptk')
                         print ("Saved Model")
