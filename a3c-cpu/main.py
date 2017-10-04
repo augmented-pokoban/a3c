@@ -7,7 +7,7 @@ from time import sleep, time
 from Network import Network
 from Worker import Worker
 
-max_episode_length = 300
+max_episode_length = 301
 max_buffer_length = 20
 gamma = .99  # discount rate for advantage estimation and reward discounting
 height = 210
@@ -57,5 +57,4 @@ with tf.Session() as sess:
         t.start()
         sleep(0.5)
         worker_threads.append(t)
-
     coord.join(worker_threads)

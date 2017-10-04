@@ -84,7 +84,7 @@ class Worker():
                 rnn_state = self.local_AC.state_init
                 self.batch_rnn_state = rnn_state
 
-                while not done or episode_step_count < max_episode_length:
+                while not done and episode_step_count < max_episode_length:
                     if self.number == 0 and episode_step_count % 50 == 0:
                          print 'Episode:', episode_count, 'steps: ', episode_step_count
 
@@ -161,4 +161,5 @@ class Worker():
                     self.summary_writer.flush()
                 if self.name == 'worker_0':
                     sess.run(self.increment)
+
                 episode_count += 1
