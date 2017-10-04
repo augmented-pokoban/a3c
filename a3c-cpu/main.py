@@ -57,12 +57,5 @@ with tf.Session() as sess:
         t.start()
         sleep(0.5)
         worker_threads.append(t)
-    gs = 0
 
-    while not coord.should_stop():
-        s = time()
-        sleep(10)
-        gs1 = sess.run(global_episodes)
-        print("Episodes", gs1, 'one for ', (time() - s) / (gs1 - gs))
-        gs = gs1
     coord.join(worker_threads)
