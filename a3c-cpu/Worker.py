@@ -85,8 +85,8 @@ class Worker():
                 self.batch_rnn_state = rnn_state
 
                 while not done or episode_step_count is not max_episode_length:
-                    if self.number == 0:
-                        self.env.render()
+                    # if self.number == 0:
+                    #     self.env.render()
 
                     # Take an action using probabilities from policy network output.
                     a_dist, v, rnn_state = sess.run(
