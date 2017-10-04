@@ -57,5 +57,4 @@ with tf.Session() as sess:
         t.start()
         sleep(0.5)
         worker_threads.append(t)
-
     coord.join(worker_threads)

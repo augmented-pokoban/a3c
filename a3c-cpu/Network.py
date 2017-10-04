@@ -59,10 +59,15 @@ class Network():
                 self.responsible_outputs = tf.reduce_sum(self.policy * self.actions_onehot, [1])
 
                 # Loss functions
-                self.value_loss = 0.5 * tf.reduce_sum(tf.square(self.target_v - tf.reshape(self.value, [-1])))
-                self.entropy = - tf.reduce_sum(self.policy * tf.log(self.policy + 10e-6))
-                self.policy_loss = -tf.reduce_sum(tf.log(self.responsible_outputs + 10e-6) * self.advantages)
-                self.loss = 0.5 * self.value_loss + self.policy_loss - self.entropy * 0.01
+                # self.entropy = - tf.reduce_sum(self.policy * tf.log(self.policy))
+                mean, variance = tf.nn.moments(self.policy, axes=[0])
+                self.entropy = -0.5 * (tf.log(2 * self.policy * variance) + 1)
+
+                # Where is the reward + discount factor for loss?
+                self.value_loss = tf.reduce_sum(tf.square(self.target_v - tf.reshape(self.value, [-1])))
+                self.policy_loss = -tf.reduce_sum(tf.log(self.responsible_outputs) * self.advantages) - self.entropy * 0.01
+
+                self.loss = 0.5 * self.value_loss + self.policy_loss
 
                 # Get gradients from local network using local losses
                 local_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope)
