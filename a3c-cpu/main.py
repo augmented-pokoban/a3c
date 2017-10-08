@@ -10,9 +10,9 @@ from Worker import Worker
 max_episode_length = 301
 max_buffer_length = 20
 gamma = .99  # discount rate for advantage estimation and reward discounting
-height = 210
-width = 160
-depth = 3
+height = 110
+width = 80
+depth = 1
 s_size = height * width * depth  # Observations are greyscale frames of 84 * 84 * 1
 a_size = 4  # Agent can move Left, Right, or Fire
 load_model = False

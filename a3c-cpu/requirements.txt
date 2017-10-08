@@ -2,3 +2,4 @@ tensorflow==1.2.0
 scipy
 numpy
 gym[atari]
+Pillow

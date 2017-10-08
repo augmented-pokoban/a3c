@@ -17,10 +17,10 @@ class Worker():
         self.episode_mean_values = []
         self.summary_writer = tf.summary.FileWriter("train_" + str(self.number))
 
-        height, width, depth, self.s_size = dimensions
+        self.height, self.width, depth, self.s_size = dimensions
 
         # Create the local copy of the network and the tensorflow op to copy global paramters to local network
-        self.local_AC = Network(height, width, depth, self.s_size, a_size, self.name, trainer)
+        self.local_AC = Network(self.height, self.width, depth, self.s_size, a_size, self.name, trainer)
         self.update_local_ops = update_target_graph('global', self.name)
 
         self.actions = range(a_size)
@@ -79,7 +79,7 @@ class Worker():
                 done = False
 
                 s = self.env.reset()
-                s = process_frame(s, self.s_size)
+                s = process_frame(s, self.s_size, self.height, self.width)
 
                 rnn_state = self.local_AC.state_init
                 self.batch_rnn_state = rnn_state
@@ -102,7 +102,7 @@ class Worker():
                     s1, r, done, _ = self.env.step(a)
 
                     if not done:
-                        s1 = process_frame(s1, self.s_size)
+                        s1 = process_frame(s1, self.s_size, self.height, self.width)
                     else:
                         s1 = s  # TODO: Fix this
 
@@ -163,3 +163,51 @@ class Worker():
                     sess.run(self.increment)
 
                 episode_count += 1
+
+    def play(self, sess):
+        done = False
+        s = self.env.reset()
+        s = process_frame(s, self.s_size, self.height, self.width)
+
+        print 'Action space:'
+        print(self.env.unwrapped.get_action_meanings())
+
+        rnn_state = self.local_AC.state_init
+        self.batch_rnn_state = rnn_state
+
+        t = 0
+
+        while not done:
+            self.env.render()
+
+            if t % 10 == 0:
+                print 'Timestep:', t
+
+            if t % 100 == 0:
+                a = 1
+            else:
+                a_dist, v, rnn_state = sess.run(
+                    [self.local_AC.policy, self.local_AC.value, self.local_AC.state_out],
+                    feed_dict={self.local_AC.inputs: [s],
+                               self.local_AC.state_in[0]: rnn_state[0],
+                               self.local_AC.state_in[1]: rnn_state[1]})
+
+                a = np.argmax(a_dist)
+
+            s, r, done, _ = self.env.step(a)
+            t += 1
+            if not done:
+                s = process_frame(s, self.s_size, self.height, self.width)
+
+        print 'Game finished'
+
+
+
+
+
+
+
+
+
+
+

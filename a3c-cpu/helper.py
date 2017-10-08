@@ -1,4 +1,5 @@
 import tensorflow as tf
+import scipy.misc
 import scipy.signal
 import numpy as np
 
@@ -16,11 +17,15 @@ def update_target_graph(from_scope, to_scope):
 
 
 # Processes Doom screen image to produce cropped and resized image.
-def process_frame(s, s_size):
-    # s = frame[10:-10, 30:-30]
-    # s = scipy.misc.imresize(s, [84, 84])
-    s = np.reshape(s, [s_size])
-    return s
+def process_frame(s, s_size, height, width):
+    r, g, b = s[:, :, 0], s[:, :, 1], s[:, :, 2]
+
+    # Convert to gray-scale using the Wikipedia formula.
+    img_gray = 0.2990 * r + 0.5870 * g + 0.1140 * b
+
+    img_gray = scipy.misc.imresize(img_gray, [height, width])
+    img_gray = np.reshape(img_gray, [s_size])
+    return img_gray
 
 
 # Discounting function used to calculate discounted returns.
